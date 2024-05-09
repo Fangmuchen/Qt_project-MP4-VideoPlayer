@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Addfile.png</file>
+        <file>images.qrc</file>
+        <file>Pause.png</file>
+        <file>Player.png</file>
+        <file>Sound.png</file>
+        <file>Stop.png</file>
+        <file>Videoplayer.png</file>
+        <file>Videoplayer1.png</file>
+        <file>bigSound.png</file>
+    </qresource>
+</RCC>

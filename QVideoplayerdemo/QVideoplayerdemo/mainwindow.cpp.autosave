@@ -1,0 +1,216 @@
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include <QTime>
+
+
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+
+{
+    ui->setupUi(this);
+    player = new QMediaPlayer(this);
+    player->setNotifyInterval(10);
+
+
+    QGraphicsScene *scene = new QGraphicsScene(this);//创建视频场景对象
+    ui->graphicsViewVideoPlayer->setScene(scene);    //创建控件于视频场景对象关联起来
+
+    videoItem = new QGraphicsVideoItem;
+    //  videoItem->setSize(QSizeF(491,296));
+
+    videoItem->setSize(QSizeF(size()));
+    videoItem->setFlags(QGraphicsItem::ItemIsMovable
+                       | QGraphicsItem::ItemIsSelectable
+                       | QGraphicsItem::ItemIsFocusable);
+
+    scene->addItem(videoItem);
+    player->setVideoOutput(videoItem);
+
+    connect(player, &QMediaPlayer::stateChanged, this, &MainWindow::onStateChange);
+    connect(player, &QMediaPlayer::durationChanged, this, &MainWindow::onVideoDurationChange);
+    connect(player, &QMediaPlayer::positionChanged, this, &MainWindow::onVideoPositionChange);
+
+    // 初始化音量滑块
+    ui->horizontalSliderVolume->setRange(0, 100); // 设置滑块范围
+    ui->horizontalSliderVolume->setValue(player->volume() * 50 / 100); // 设置初始音量
+    ui->labelVolumeValue->setText(QString::number(player->volume()) + "%");// 初始化音量标签显示当前音量
+    // 连接信号和槽
+    connect(player, &QMediaPlayer::volumeChanged, this, &MainWindow::onSoundVolumeChanged);
+    connect(ui->horizontalSliderVolume, &QSlider::valueChanged, this, &MainWindow::onSoundSliderVolumeChanged);
+    connect(ui->horizontalSliderVideo, &QSlider::valueChanged, this, &MainWindow::onVideoSliderValueChanged);
+
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+    delete player; // 删除播放器
+    delete videoItem; // 同样删除videoItem
+}
+
+
+void MainWindow::on_pushButtonAdd_clicked()
+{
+    QString currentpath = QDir::homePath(); //获取系统当前目录
+    QString openfiledlgtitle = "请选择视频文件（video）";
+    QString filefilter = "wmv文件(*.wmv);;mp4文件（*.mp4）;;所有文件(*.*)"; //播放视频过滤
+
+    QString filedlg = QFileDialog::getOpenFileName(this,openfiledlgtitle);
+
+    if(filedlg.isEmpty())
+    {
+        QMessageBox::critical(this,"错误","打开视频出错，请重新检查？",QMessageBox::Yes);
+        return ;
+    }
+
+    //获取文件信息显示在Label上
+    QFileInfo fileninfos(filedlg);
+    ui->labelfilename->setText(fileninfos.fileName());
+
+    //播放视频
+    player->setMedia(QUrl::fromLocalFile(filedlg));
+    player->play();
+
+
+}
+
+
+void MainWindow::onStateChange(QMediaPlayer::State state)
+{
+
+    // 根据播放器的状态来启用或禁用按钮
+    ui->pushButtonPlayer->setEnabled(state != QMediaPlayer::PlayingState);
+    ui->pushButtonAdd->setEnabled(!player->isVideoAvailable() || state != QMediaPlayer::PlayingState);
+    ui->pushButtonstop->setEnabled(state == QMediaPlayer::PlayingState);
+    ui->pushButtonpause->setEnabled(state == QMediaPlayer::PlayingState);
+
+
+}
+// 辅助函数，用于将微秒转换为 "mm:ss" 格式
+QString formatDuration(qint64 duration) {
+    QTime time;
+    time = time.addMSecs(duration / 1000); // 将微秒转换为毫秒
+    return time.toString("mm:ss");
+}
+
+//实现视频部分进度的数字显示
+void MainWindow::onVideoDurationChange(qint64 duration)
+{
+    if (duration >= 0) {
+        // 将时长转换为友好的格式（例如: "01:30" 表示1分钟30秒）
+        QTime time(0, 0);
+        time = time.addMSecs(duration);
+        durationTime = time.toString("mm:ss"); // 更新durationTime字符串
+        // 更新UI上的时长显示，例如通过一个QLabel
+        ui->labelDuration->setText(durationTime);
+        ui->horizontalSliderVideo->setMaximum(duration / 1000);
+    }
+}
+
+//实现视频播放进度条的运动
+void MainWindow::onVideoPositionChange(qint64 position)
+{
+    if (player->position() >= 0) {
+
+          // 将当前位置转换为友好的格式
+          QTime currentTime(0, 0);
+          currentTime = currentTime.addMSecs(position);
+          positionTime = currentTime.toString("mm:ss"); // 更新PositionTime字符串
+          // 更新UI上的当前播放位置显示
+          ui->labelDuration->setText(positionTime);
+          // 同时更新进度条的位置
+          ui->horizontalSliderVideo->setValue(position / 1000); // 将微秒转换为秒
+          qDebug() << "Position Changed:" << position;
+
+
+      }
+
+
+}
+
+void MainWindow::onVideoSliderValueChanged(int sliderPosition)
+{
+    if (player->state() == QMediaPlayer::PlayingState || player->state() == QMediaPlayer::PausedState) {
+        qint64 newPosition = sliderPosition * 1000; // 将秒转换为微秒
+        // 仅当新位置与当前位置不同时设置位置
+        if (newPosition != player->position()) {
+            player->setPosition(newPosition);
+        }
+    }
+    qDebug() << "Position Changed1:" << sliderPosition;
+     \
+}
+
+
+
+void MainWindow::onSoundSliderVolumeChanged(int volume)
+{
+    // 将滑块的值转换为 QMediaPlayer 可以接受的音量值（0-100）
+    player->setVolume(volume);
+    // 更新音量标签显示当前音量
+    ui->labelVolumeValue->setText(QString::number(volume) + "%");
+}
+
+
+void MainWindow::onSoundVolumeChanged(int volume)
+{
+    // 更新滑块的位置以匹配 QMediaPlayer 的当前音量
+    ui->horizontalSliderVolume->setValue(volume);
+    ui->labelVolumeValue->setText(QString::number(volume) + "%");
+}
+
+
+
+//播放按钮的槽函数
+void MainWindow::on_pushButtonPlayer_clicked()
+{
+    if (player->state() != QMediaPlayer::PlayingState)
+    {
+            player->play(); // 停止视频播放
+    }
+
+
+
+}
+
+void MainWindow::on_pushButtonpause_clicked()
+{
+    if (player->state() != QMediaPlayer::PausedState)
+    {
+        player->pause(); // 停止视频播放
+    }
+}
+
+void MainWindow::on_pushButtonstop_clicked()
+{
+    if (player->state() != QMediaPlayer::StoppedState)
+    {
+        player->stop(); // 停止视频播放
+    }
+}
+
+void MainWindow::on_pushButtonsound_clicked()
+{
+
+    clickCount++; // 增加点击次数
+
+     // 判断点击次数
+     if (clickCount % 2 == 0) {
+         // 双数，取消静音
+         player->setMuted(false);
+         ui->pushButtonsound->setIcon(QIcon(":/bigSound.png"));// 更新图标以反映非静音状态
+     } else {
+         // 单数，执行静音操作
+         player->setMuted(true);
+         ui->pushButtonsound->setIcon(QIcon(":/Sound.png")); // 更新图标以反映静音状态
+     }
+
+     // 打印点击次数，调试用
+     qDebug() << "Click Count:" << clickCount;
+
+}
+
+
+
+

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>511</width>
+    <height>414</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QVideoplayerdemo</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="images/images.qrc">
+    <normaloff>:/Videoplayer1.png</normaloff>:/Videoplayer1.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QGraphicsView" name="graphicsViewVideoPlayer"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QPushButton" name="pushButtonAdd">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="images/images.qrc">
+            <normaloff>:/Addfile.png</normaloff>:/Addfile.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>播放文件</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonPlayer">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="images/images.qrc">
+            <normaloff>:/Player.png</normaloff>:/Player.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonpause">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="images/images.qrc">
+            <normaloff>:/Pause.png</normaloff>:/Pause.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonstop">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="images/images.qrc">
+            <normaloff>:/Stop.png</normaloff>:/Stop.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonsound">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="images/images.qrc">
+            <normaloff>:/bigSound.png</normaloff>:/bigSound.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>音量</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSlider" name="horizontalSliderVolume">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelVolumeValue">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="labelfilename">
+          <property name="text">
+           <string>暂无视频播放？     </string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSlider" name="horizontalSliderVideo">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelDuration">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>511</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources>
+  <include location="images/images.qrc"/>
+  <include location="images/images.qrc"/>
+  <include location="images/images.qrc"/>
+ </resources>
+ <connections/>
+</ui>
